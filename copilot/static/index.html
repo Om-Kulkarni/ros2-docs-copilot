@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ROS 2 Docs Copilot</title>
+<style>
+  :root { --bg:#0f1720; --panel:#16212d; --text:#e6edf3; --muted:#8b9bab; --accent:#22a6f2; --border:#25313f; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:16px/1.55 system-ui,sans-serif; background:var(--bg); color:var(--text); }
+  main { max-width:820px; margin:0 auto; padding:32px 16px; }
+  h1 { margin:0 0 4px; font-size:1.6rem; } h1 span { color:var(--accent); }
+  .sub { color:var(--muted); margin:0 0 24px; }
+  form { display:flex; gap:8px; }
+  input { flex:1; padding:12px 14px; border-radius:8px; border:1px solid var(--border); background:var(--panel); color:var(--text); font-size:1rem; }
+  button { padding:12px 18px; border:0; border-radius:8px; background:var(--accent); color:#fff; font-weight:600; cursor:pointer; }
+  button:disabled { opacity:.5; }
+  .examples { margin:12px 0 24px; display:flex; flex-wrap:wrap; gap:8px; }
+  .examples a { font-size:.85rem; color:var(--muted); border:1px solid var(--border); border-radius:999px; padding:4px 10px; cursor:pointer; text-decoration:none; }
+  .answer { background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:18px 20px; white-space:pre-wrap; }
+  .answer code, pre { background:#0b1118; border-radius:6px; }
+  pre { padding:10px; overflow-x:auto; }
+  .sources { margin-top:16px; font-size:.9rem; }
+  .sources li { margin:4px 0; color:var(--muted); } .sources a { color:var(--accent); }
+  .meta { color:var(--muted); font-size:.8rem; margin-top:8px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>ROS 2 <span>Docs Copilot</span></h1>
+  <p class="sub">Ask anything about ROS 2 Jazzy. Answers come only from docs.ros.org, with citations.</p>
+  <form id="f"><input id="q" placeholder="e.g. How do I set QoS reliability to best effort in rclpy?" autofocus><button id="b">Ask</button></form>
+  <div class="examples" id="ex"></div>
+  <div id="out"></div>
+</main>
+<script>
+const ex = ["How do I record a bag of only one topic?", "What does colcon build --symlink-install do?",
+            "How do I pass parameters to a node from a launch file?", "What is the difference between a service and an action?"];
+const exEl = document.getElementById('ex');
+ex.forEach(t => { const a = document.createElement('a'); a.textContent = t; a.onclick = () => { q.value = t; f.requestSubmit(); }; exEl.appendChild(a); });
+const esc = s => s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+function render(md) {
+  let h = esc(md).replace(/```(\w*)\n([\s\S]*?)```/g, (_, l, c) => `<pre><code>${c}</code></pre>`);
+  h = h.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  return h.replace(/\[(\d+)\]/g, '<a href="#src$1" style="color:var(--accent)">[$1]</a>');
+}
+const f = document.getElementById('f'), q = document.getElementById('q'), b = document.getElementById('b'), out = document.getElementById('out');
+f.onsubmit = async e => {
+  e.preventDefault(); if (!q.value.trim()) return;
+  b.disabled = true; out.innerHTML = '<p class="meta">Searching the docs…</p>';
+  const t0 = performance.now();
+  try {
+    const r = await fetch('/api/ask', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({question:q.value})});
+    const d = await r.json(); if (!r.ok) throw new Error(d.detail || r.statusText);
+    out.innerHTML = `<div class="answer">${render(d.answer)}</div>
+      <ol class="sources">${d.sources.map(s => `<li id="src${s.n}"><a href="${s.url}" target="_blank" rel="noopener">${esc(s.title)} — ${esc(s.section)}</a> <span>(${s.score})</span></li>`).join('')}</ol>
+      <p class="meta">${d.model} · ${((performance.now()-t0)/1000).toFixed(1)}s</p>`;
+  } catch (err) { out.innerHTML = `<p class="answer">Error: ${esc(String(err.message))}</p>`; }
+  b.disabled = false;
+};
+</script>
+</body>
+</html>
