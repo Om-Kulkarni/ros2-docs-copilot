@@ -1,0 +1,21 @@
+{
+  "date": "2026-11-13",
+  "n": 30,
+  "retrieval_mode": "hybrid",
+  "embed_model": "BAAI/bge-small-en-v1.5",
+  "chunks": 2480,
+  "top_k_for_answers": 6,
+  "hit@1": 0.833,
+  "hit@3": 0.933,
+  "hit@5": 0.933,
+  "mrr@5": 0.878,
+  "llm_model": "openai/gpt-4o-mini",
+  "judge_model": "openai/gpt-4o-mini",
+  "accuracy": 0.767,
+  "accuracy_incl_partial": 0.933,
+  "correct": 23,
+  "partial": 5,
+  "incorrect": 2,
+  "citation_rate": 1.0,
+  "median_latency_s": 3.53
+}

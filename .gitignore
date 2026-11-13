@@ -1,0 +1,8 @@
+.env
+.venv/
+__pycache__/
+data/ros2_documentation/
+data/chroma/
+data/models/
+upwork_profile_draft.md
+docs/upwork-blurb.md

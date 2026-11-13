@@ -1,0 +1,23 @@
+services:
+  web:
+    build: .
+    image: ros2-docs-copilot
+    env_file: .env
+    ports: ["8000:8000"]
+    volumes: ["./data:/app/data", "./evals/results:/app/evals/results"]
+    command: ["web"]
+  # stdio MCP server; used via `docker compose run --rm -T mcp` (see README)
+  mcp:
+    image: ros2-docs-copilot
+    env_file: .env
+    volumes: ["./data:/app/data"]
+    command: ["mcp"]
+    stdin_open: true
+    profiles: ["mcp"]
+  eval:
+    image: ros2-docs-copilot
+    env_file: .env
+    volumes: ["./data:/app/data", "./evals:/app/evals"]
+    entrypoint: ["/app/scripts/entrypoint.sh", "eval"]  # extra args go to run_evals.py
+    command: []
+    profiles: ["eval"]
