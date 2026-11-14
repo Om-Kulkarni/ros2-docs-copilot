@@ -2,6 +2,8 @@
 
 A retrieval-augmented (RAG) agent over the official **ROS 2 Jazzy documentation** that answers robotics developer questions **with citations to docs.ros.org**. It's exposed as an **MCP server** for Claude Desktop and Cursor, plus a small web UI, and it ships with an **eval suite** that reports real numbers.
 
+![Demo: docker compose up, then two questions answered with cited docs.ros.org sources](docs/demo.gif)
+
 > Ask: *"How do I make turtle_teleop_key control turtle2?"*
 > Get: the exact `--ros-args --remap …` command, with a `[1]` citation that links to the tutorial section it came from.
 
@@ -141,7 +143,7 @@ evals/
   qa.jsonl       # 30 hand-written Q&A pairs with relevant pages
   run_evals.py   # hit@k, MRR, LLM-as-judge accuracy, citation rate
   results/       # summaries + per-question outputs
-docs/demo-script.md  # shot list for the demo GIF
+docs/demo.gif        # 30 s demo (docs/demo-script.md = shot list)
 ```
 
 ## Limitations and next steps
